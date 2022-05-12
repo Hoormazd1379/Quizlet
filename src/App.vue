@@ -1,6 +1,15 @@
 <script setup>
 import { ref, computed } from 'vue'
 
+function Result(ans, time) {
+this.ans = false;
+this.time = false;
+};
+
+var resultsArray = [];
+
+var scoreval = 0;
+
 const questions = ref([
   {
 	question: 'What is Vue?',
@@ -39,12 +48,16 @@ const currentQuestion = ref(0)
 const score = computed(() => {
 	let value = 0
 	questions.value.map(q => {
+    var a = false;
+    var t = 0;
 		if (q.selected != null && q.answer == q.selected) {
 			console.log('correct');
+      		a = true;
 			value++
 		}
+    resultsArray.push(new Result(a,t));
 	})
-	return value
+	return scoreval
 })
 
 const getCurrentQuestion = computed(() => {
@@ -58,6 +71,15 @@ const SetAnswer = (e) => {
 	e.target.value = null
 }
 
+const CorrectAnswer = () => {
+scoreval ++
+return 'correct'
+}
+const WrongAnswer = () => {
+
+return 'wrong'
+}
+
 const NextQuestion = () => {
 	if (currentQuestion.value < questions.value.length - 1) {
 		currentQuestion.value++
@@ -66,6 +88,7 @@ const NextQuestion = () => {
 	
 	quizCompleted.value = true
 }
+
 </script>
 
 <template>
@@ -85,8 +108,8 @@ const NextQuestion = () => {
 					:class="`option ${
 						getCurrentQuestion.selected == index 
 							? index == getCurrentQuestion.answer 
-								? 'correct' 
-								: 'wrong'
+								? CorrectAnswer()
+								: WrongAnswer()
 							: ''
 					} ${
 						getCurrentQuestion.selected != null &&
@@ -136,7 +159,7 @@ const NextQuestion = () => {
 }
 
 body {
-	background-color: #271c36;
+	background-color: #361c33;
 	color: #FFF;
 }
 
@@ -154,7 +177,7 @@ h1 {
 }
 
 .quiz {
-	background-color: #382a4b;
+	background-color: #4a2a4b;
 	padding: 1rem;
 	width: 100%;
 	max-width: 640px;
@@ -183,14 +206,14 @@ h1 {
 .option {
 	padding: 1rem;
 	display: block;
-	background-color: #271c36;
+	background-color: #331c36;
 	margin-bottom: 0.5rem;
 	border-radius: 0.5rem;
 	cursor: pointer;
 }
 
 .option:hover {
-	background-color: #2d213f;
+	background-color: #3f213d;
 }
 
 .option.correct {
@@ -219,7 +242,7 @@ button {
 	border: none;
 	cursor: pointer;
 	padding: 0.5rem 1rem;
-	background-color: #2cce7d;
+	background-color: #2c85ce;
 	color: #2d213f;
 	font-weight: 700;
 	text-transform: uppercase;

@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
+import stopWatch from './components/StopWatch.vue'
 
 function Result(ans, time) {
 this.ans = false;
@@ -48,14 +49,10 @@ const currentQuestion = ref(0)
 const score = computed(() => {
 	let value = 0
 	questions.value.map(q => {
-    var a = false;
-    var t = 0;
 		if (q.selected != null && q.answer == q.selected) {
 			console.log('correct');
-      		a = true;
 			value++
 		}
-    resultsArray.push(new Result(a,t));
 	})
 	return scoreval
 })
@@ -71,13 +68,25 @@ const SetAnswer = (e) => {
 	e.target.value = null
 }
 
-const CorrectAnswer = () => {
-scoreval ++
-return 'correct'
-}
-const WrongAnswer = () => {
+function Answered(i,ans) {
 
-return 'wrong'
+	var a = false
+    var t = 0
+
+	
+
+	console.log(i,ans)
+	if (i == ans) {
+		a = true
+		resultsArray.push(new Result(a,t));
+		return 'correct'
+	}
+	else {
+
+		resultsArray.push(new Result(a,t));
+		return 'wrong'
+	}
+
 }
 
 const NextQuestion = () => {
@@ -93,6 +102,23 @@ const NextQuestion = () => {
 
 <template>
 	<main class="app">
+		 <section>
+			<stop-watch
+			v-show="isStarted || isFinished"
+			ref="stopWatch"
+			class="digits"
+			hours="false"
+			minutes
+			@start="setStartTime"
+			@stop="setStopTime"
+			@lap="setLapTime"
+			/>
+
+			<button @click="$refs.stopWatch.start()">Start</button>
+			<button @click="$refs.stopWatch.lap('42')">Lap</button>
+			<button @click="$refs.stopWatch.stop()">Stop</button>
+			<button @click="$refs.stopWatch.reset()">Reset</button>
+		</section>
 		<h1>The Quiz</h1>
 		
 		<section class="quiz" v-if="!quizCompleted">
@@ -107,9 +133,7 @@ const NextQuestion = () => {
 					:for="'option' + index" 
 					:class="`option ${
 						getCurrentQuestion.selected == index 
-							? index == getCurrentQuestion.answer 
-								? CorrectAnswer()
-								: WrongAnswer()
+							? Answered(index,getCurrentQuestion.answer)
 							: ''
 					} ${
 						getCurrentQuestion.selected != null &&
@@ -149,6 +173,22 @@ const NextQuestion = () => {
 		</section>
 	</main>
 </template>
+
+<script>
+export default {
+  methods: {
+    setStartTime(timestamp) {
+      console.log(timestamp);
+    },
+    stopWatch(timestamp, formattedTime) {
+      console.log(timestamp, formattedTime);
+    },
+    setLapTime(timestamp, formattedTime, id) {
+      console.log(timestamp, formattedTime, id);
+    },
+  },
+};
+</script>
 
 <style>
 * {
